@@ -47,7 +47,7 @@ public class MainWorker {
                                         member.getPrivateChannel().block().createMessage(EmbedCreateSpec.builder()
                                                         .title("ボイスチャンネルにようこそ!!")
                                                         .color(Color.GREEN)
-                                                        .description("Lineチャットに参加を通知しますか?")
+                                                        .description("実装班Lineグループに参加を通知しますか?")
                                                         .build()).withComponents(ActionRow.of(Button.primary("notify-YES", "YES"), Button.secondary("notify-NO", "NO")))
                                                 .doOnSuccess(message1 -> {
                                                     sentMessage = new MessageData(member.getId().asLong(), message1.getChannelId().asLong(), message1.getId().asLong());
@@ -55,7 +55,7 @@ public class MainWorker {
                                         client.getRestClient().getUserService().createDM(DMCreateRequest.builder().recipientId(member.getId().asString()).build()).block();
                                     }
                                 } else if (voiceStateUpdateEvent.isLeaveEvent()) {
-                                    if (sentMessage!=null) {
+                                    if (sentMessage != null) {
                                         voiceStateUpdateEvent.getCurrent().getMember().subscribe(
                                                 member -> {
                                                     if (member.getId().asLong() == sentMessage.userID) {
