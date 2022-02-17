@@ -12,4 +12,10 @@ public class Main implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         worker = new MainWorker();
     }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        worker.stop();
+        worker = null;
+    }
 }

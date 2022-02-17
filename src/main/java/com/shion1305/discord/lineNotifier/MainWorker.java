@@ -20,6 +20,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.DMCreateRequest;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.util.Color;
+import reactor.core.Disposable;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,11 +32,21 @@ public class MainWorker {
     boolean colorSwitcher = true;
     MessageData sentMessage;
     private static final Logger logger = Logger.getLogger("Discord-LineStatusNotifier");
+    private final List<Disposable> disposables = new ArrayList<>();
+
+    public void stop() {
+        logger.info("SHUTDOWN SEQUENCE STARTED");
+        for (Disposable d : disposables) {
+            d.dispose();
+        }
+        disposables.clear();
+        logger.info("SHUTDOWN SEQUENCE ENDED SUCCESSFULLY");
+    }
 
     public MainWorker() {
         logger.info("MainWorker Initiated");
         GatewayDiscordClient client = DiscordClient.create(ConfigManager.getConfig("DiscordToken")).gateway().setEnabledIntents(IntentSet.all()).login().block();
-        client.on(VoiceStateUpdateEvent.class)
+        disposables.add(client.on(VoiceStateUpdateEvent.class)
                 .filter(voiceStateUpdateEvent -> !voiceStateUpdateEvent.getCurrent().getMember().block().isBot())
                 .filter(voiceStateUpdateEvent -> voiceStateUpdateEvent.getCurrent().getGuildId().asLong() == 865206369014775808L)
                 .subscribe(voiceStateUpdateEvent -> {
@@ -88,8 +99,8 @@ public class MainWorker {
                                 e.printStackTrace();
                             }
                         }
-                );
-        client.on(ButtonInteractionEvent.class)
+                ));
+        disposables.add(client.on(ButtonInteractionEvent.class)
                 .subscribe(buttonInteractionEvent -> {
                     try {
                         Message targetMessage = buttonInteractionEvent.getMessage().get();
@@ -129,6 +140,6 @@ public class MainWorker {
                         logger.severe("CRITICAL EXCEPTION OCCURRED-2");
                         e.printStackTrace();
                     }
-                });
+                }));
     }
 }
