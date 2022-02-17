@@ -43,6 +43,16 @@ public class MainWorker {
                                 if (voiceStateUpdateEvent.isJoinEvent()) {
                                     Member member = voiceStateUpdateEvent.getCurrent().getMember().block();
                                     actives.add(member.getId().asLong());
+                                    client.getChannelById(Snowflake.of(943676510533988422L)).subscribe(
+                                            channel -> {
+                                                channel.getRestChannel().createMessage(EmbedCreateSpec.builder()
+                                                                .color(Color.DISCORD_WHITE)
+                                                                .author(member.getNickname().isPresent() ? member.getNickname().get() : member.getUsername(), null, member.getAvatarUrl())
+                                                                .title(voiceStateUpdateEvent.getCurrent().getChannel().block().getName() + "に入室しました!").build().asRequest())
+                                                        .subscribe();
+                                            }
+                                    );
+
                                     if (actives.size() == 1) {
                                         member.getPrivateChannel().block().createMessage(EmbedCreateSpec.builder()
                                                         .title("ボイスチャンネルにようこそ!!")
