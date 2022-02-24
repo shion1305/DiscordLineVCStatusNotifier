@@ -17,7 +17,6 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.discordjson.json.DMCreateRequest;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.util.Color;
 import reactor.core.Disposable;
@@ -73,7 +72,6 @@ public class MainWorker {
                                                 .doOnSuccess(message1 -> {
                                                     sentMessage = new MessageData(member.getId().asLong(), message1.getChannelId().asLong(), message1.getId().asLong());
                                                 }).block();
-                                        client.getRestClient().getUserService().createDM(DMCreateRequest.builder().recipientId(member.getId().asString()).build()).block();
                                     }
                                 } else if (voiceStateUpdateEvent.isLeaveEvent()) {
                                     if (sentMessage != null) {
